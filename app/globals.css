@@ -1,0 +1,284 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  
+  /* Luxury Colors */
+  --color-luxury-gold: var(--luxury-gold);
+  --color-luxury-gold-light: var(--luxury-gold-light);
+  --color-luxury-cream: var(--luxury-cream);
+  --color-luxury-dark: var(--luxury-dark);
+  --color-luxury-light: var(--luxury-light);
+  
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --font-heading: 'Playfair Display', serif;
+  --font-body: 'Inter', sans-serif;
+     /* Gradients */
+}
+
+:root {
+  --background: #FFFFFF;
+  --foreground: #1A1A1A;
+  --card: #FFFFFF;
+  --card-foreground: #1A1A1A;
+
+  --popover: #FFFFFF;
+  --popover-foreground: #1A1A1A;
+
+  /* Luxury Gold-Beige Primary (#C29C77) */
+  --primary: #C29C77;
+  --primary-foreground: #FFFFFF;
+
+  /* Soft Cream Secondary (#F9F2EA) */
+  --secondary: #F9F2EA;
+  --secondary-foreground: #1A1A1A;
+
+  --muted: #F9F2EA;
+  --muted-foreground: #4A4A4A;
+
+  /* Luxury accent variations */
+  --accent: #C29C77;
+  --accent-foreground: #FFFFFF;
+
+  --destructive: #C29C77;
+  --destructive-foreground: #FFFFFF;
+
+  --border: #E5E5E5;
+  --input: #E5E5E5;
+  --ring: #C29C77;
+
+  --radius: 0.75rem;
+  --luxury-gold: #C29C77;
+  --luxury-gold-light: #dfc2a3;
+  --luxury-cream: #F9F2EA;
+  --luxury-dark: #1A1A1A;
+  --luxury-light: #FFFFFF;
+
+     --gradient-luxury: linear-gradient(135deg, #C29C77, #C29C77CC);
+     --gradient-hero: linear-gradient(135deg, #1A1A1A99, #1A1A1A66);
+     --gradient-elegant: linear-gradient(180deg, #F9F2EA, #FFFFFF);
+ 
+     /* Shadows */
+     --shadow-luxury: 0 20px 60px -20px #C29C774D;
+     --shadow-elegant: 0 10px 40px -10px #1A1A1A1A;
+     --shadow-subtle: 0 4px 20px -4px #1A1A1A0D;
+ 
+     --sidebar-background: #F9F2EA;
+ 
+     --sidebar-foreground: #4A4A4A;
+ 
+     --sidebar-primary: #1A1A1A;
+ 
+     --sidebar-primary-foreground: #FFFFFF;
+ 
+     --sidebar-accent: #F9F2EA;
+ 
+     --sidebar-accent-foreground: #1A1A1A;
+ 
+     --sidebar-border: #E5E5E5;
+ 
+      --sidebar-ring: #C29C77;
+  --chart-1: #646464;
+  --chart-2: #606060;
+  --chart-3: #398072;
+  --chart-4: #828089;
+  --chart-5: #769078;
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #1A1A1A;
+  --sidebar-primary: #1A1A1A;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #F9F2EA;
+  --sidebar-accent-foreground: #1A1A1A;
+  --sidebar-border: #E5E5E5;
+  --sidebar-ring: #C29C77;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-body;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
+  }
+}
+
+/* Luxury Component Utilities */
+@layer components {
+  .luxury-section {
+    @apply py-20 px-4 lg:px-8;
+  }
+
+  .luxury-container {
+    @apply max-w-7xl mx-auto;
+  }
+
+  .luxury-text-shadow {
+    text-shadow: 0 2px 10px #1A1A1A33;
+  }
+
+  .luxury-backdrop {
+    backdrop-filter: blur(10px);
+    background: #1A1A1A44;
+  }
+
+  .luxury-glass {
+    backdrop-filter: blur(20px);
+    background: #FFFFFF1A;
+    border: 1px solid #FFFFFF2A;
+  }
+
+  /* Luxury Gradient Backgrounds */
+  .bg-gradient-luxury {
+    background: var(--gradient-luxury);
+  }
+
+  .bg-gradient-hero {
+    background: var(--gradient-hero);
+  }
+
+  .bg-gradient-elegant {
+    background: var(--gradient-elegant);
+  }
+
+  /* Luxury Shadow Utilities */
+  .shadow-luxury {
+    box-shadow: var(--shadow-luxury);
+  }
+
+  .shadow-elegant {
+    box-shadow: var(--shadow-elegant);
+  }
+
+  .shadow-subtle {
+    box-shadow: var(--shadow-subtle);
+  }
+
+  /* Luxury Button Styles */
+  .btn-luxury {
+    @apply bg-primary text-primary-foreground px-8 py-3 rounded-lg font-medium transition-all duration-300;
+    box-shadow: var(--shadow-luxury);
+  }
+
+  .btn-luxury:hover {
+    @apply scale-105;
+    box-shadow: var(--shadow-elegant);
+  }
+
+  .btn-luxury-outline {
+    @apply border-2 border-primary text-primary px-8 py-3 rounded-lg font-medium transition-all duration-300 bg-transparent;
+  }
+
+  .btn-luxury-outline:hover {
+    @apply bg-primary text-primary-foreground scale-105;
+    box-shadow: var(--shadow-luxury);
+  }
+
+  .gradient-white-to-gold {
+    background: linear-gradient(
+      to right,
+      white 0%,
+      white 60%,
+      #C29C77 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+    transition: background 0.4s ease-in-out;
+  }
+
+  .gradient-gold-to-white {
+    background: linear-gradient(
+      to right,
+      #C29C77 0%,
+      #C29C77 60%,
+      white 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+    transition: background 0.4s ease-in-out;
+  }
+
+  .fade-in {
+    animation: fadeInUp 0.8s ease-out forwards;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  .fade-in-delay-1 {
+    animation: fadeInUp 0.8s ease-out 0.2s forwards;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  .fade-in-delay-2 {
+    animation: fadeInUp 0.8s ease-out 0.4s forwards;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  .parallax-bg {
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes luxury-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px #C29C7733;
+  }
+  50% {
+    box-shadow: 0 0 40px #C29C7755;
+  }
+}
