@@ -5,19 +5,19 @@ const Testimonials = () => {
     {
       name: "Alexandra Sterling",
       title: "CEO, Sterling Enterprises",
-      content: "Luxe Salon transformed not just my appearance, but my confidence. The attention to detail and luxury experience is unmatched.",
+      content: "Tangerine Beauty Salon transformed not just my appearance, but my confidence. The attention to detail and luxury experience is unmatched.",
       rating: 5
     },
     {
       name: "Marcus Thompson",
       title: "Investment Banker",
-      content: "As someone who values precision and quality, Luxe Salon exceeds every expectation. Their grooming services are simply exceptional.",
+      content: "As someone who values precision and quality, Tangerine Beauty Salon exceeds every expectation. Their grooming services are simply exceptional.",
       rating: 4
     },
     {
       name: "Isabella Rodriguez",
       title: "Fashion Designer",
-      content: "The artistry and elegance at Luxe Salon aligns perfectly with my aesthetic vision. They understand luxury at the highest level.",
+      content: "The artistry and elegance at Tangerine Beauty Salon aligns perfectly with my aesthetic vision. They understand luxury at the highest level.",
       rating: 5
     }
   ];

@@ -6,7 +6,7 @@ export const Footer = () => {
             {/* Contact Info */}
             <div className="space-y-6">
               <h3 className="text-2xl font-playfair font-bold text-primary">
-                Luxe Studio
+              Tangerine Beauty Salon 
               </h3>
               <div className="space-y-4 font-montserrat">
                 <div className="flex items-start space-x-3">
@@ -102,7 +102,7 @@ export const Footer = () => {
           <div className="border-t border-background/20 mt-12 pt-8">
             <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
               <p className="text-background/60 font-montserrat text-sm">
-                © 2024 Luxe Studio. All rights reserved.
+                © 2024 Tangerine Beauty Salon. All rights reserved.
               </p>
               <div className="flex space-x-6 text-background/60 font-montserrat text-sm">
                 <a href="#" className="hover:text-primary transition-colors duration-300">Privacy Policy</a>

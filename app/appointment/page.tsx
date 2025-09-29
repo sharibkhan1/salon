@@ -698,7 +698,7 @@ export default function Booking() {
                   </p>
                   <p className="text-muted-foreground font-montserrat max-w-lg mx-auto">
                     We&apos;ve sent a confirmation email to {customerInfo.email}. We look forward to 
-                    providing you with an exceptional experience at Luxe Studio.
+                    providing you with an exceptional experience at Tangerine Beauty Salon.
                   </p>
                 </div>
                 

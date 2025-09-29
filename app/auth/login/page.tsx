@@ -69,11 +69,11 @@ function LoginForm() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-elegant flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-gradient-elegant flex items-center mt-10 justify-center px-4 py-12">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link href="/" className="font-heading text-3xl font-bold text-luxury-gold">
-            Luxe Salon
+            Tangerine Beauty Salon 
           </Link>
           <p className="text-muted-foreground mt-2">Welcome back to luxury</p>
         </div>

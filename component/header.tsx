@@ -38,8 +38,8 @@ const Header = () => {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 px-4 bg-background/95 backdrop-blur-sm border-b border-border">
       <nav className="luxury-container flex items-center justify-between py-4">
-        <Link href="/" className="font-heading text-2xl font-bold text-luxury-gold">
-          Luxe Salon
+        <Link href="/" className="font-heading text-xl md:text-2xl font-bold text-luxury-gold">
+        Tangerine Beauty 
         </Link>
         
         <div className="hidden md:flex items-center space-x-8">

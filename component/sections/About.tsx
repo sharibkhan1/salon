@@ -13,7 +13,7 @@ const About = () => {
 
           <div className="space-y-6 text-lg text-muted-foreground leading-relaxed">
             <p>
-              At Luxe Salon, we redefine the art of beauty and grooming. Our exclusive sanctuary 
+              At Tangerine Beauty Salon, we redefine the art of beauty and grooming. Our exclusive sanctuary 
               caters to discerning individuals who appreciate the finest in luxury experiences.
             </p>
 
