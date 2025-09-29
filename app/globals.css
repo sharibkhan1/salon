@@ -60,45 +60,45 @@
   --popover: #FFFFFF;
   --popover-foreground: #1A1A1A;
 
-  /* Luxury Gold-Beige Primary (#C29C77) */
-  --primary: #C29C77;
+  /* Luxury Gold-Beige Primary (#FF914D) */
+  --primary: #FF914D;
   --primary-foreground: #FFFFFF;
 
-  /* Soft Cream Secondary (#F9F2EA) */
-  --secondary: #F9F2EA;
+  /* Soft Cream Secondary (#F2E5D8) */
+  --secondary: #F2E5D8;
   --secondary-foreground: #1A1A1A;
 
-  --muted: #F9F2EA;
+  --muted: #F2E5D8;
   --muted-foreground: #4A4A4A;
 
   /* Luxury accent variations */
-  --accent: #C29C77;
+  --accent: #FF914D;
   --accent-foreground: #FFFFFF;
 
-  --destructive: #C29C77;
+  --destructive: #FF914D;
   --destructive-foreground: #FFFFFF;
 
   --border: #E5E5E5;
   --input: #E5E5E5;
-  --ring: #C29C77;
+  --ring: #FF914D;
 
   --radius: 0.75rem;
-  --luxury-gold: #C29C77;
+  --luxury-gold: #FF914D;
   --luxury-gold-light: #dfc2a3;
-  --luxury-cream: #F9F2EA;
+  --luxury-cream: #F2E5D8;
   --luxury-dark: #1A1A1A;
   --luxury-light: #FFFFFF;
 
-     --gradient-luxury: linear-gradient(135deg, #C29C77, #C29C77CC);
+     --gradient-luxury: linear-gradient(135deg, #FF914D, #FF914DCC);
      --gradient-hero: linear-gradient(135deg, #1A1A1A99, #1A1A1A66);
-     --gradient-elegant: linear-gradient(180deg, #F9F2EA, #FFFFFF);
+     --gradient-elegant: linear-gradient(180deg, #F2E5D8, #FFFFFF);
  
      /* Shadows */
-     --shadow-luxury: 0 20px 60px -20px #C29C774D;
+     --shadow-luxury: 0 20px 60px -20px #FF914D4D;
      --shadow-elegant: 0 10px 40px -10px #1A1A1A1A;
      --shadow-subtle: 0 4px 20px -4px #1A1A1A0D;
  
-     --sidebar-background: #F9F2EA;
+     --sidebar-background: #F2E5D8;
  
      --sidebar-foreground: #4A4A4A;
  
@@ -106,13 +106,13 @@
  
      --sidebar-primary-foreground: #FFFFFF;
  
-     --sidebar-accent: #F9F2EA;
+     --sidebar-accent: #F2E5D8;
  
      --sidebar-accent-foreground: #1A1A1A;
  
      --sidebar-border: #E5E5E5;
  
-      --sidebar-ring: #C29C77;
+      --sidebar-ring: #FF914D;
   --chart-1: #646464;
   --chart-2: #606060;
   --chart-3: #398072;
@@ -122,10 +122,10 @@
   --sidebar-foreground: #1A1A1A;
   --sidebar-primary: #1A1A1A;
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #F9F2EA;
+  --sidebar-accent: #F2E5D8;
   --sidebar-accent-foreground: #1A1A1A;
   --sidebar-border: #E5E5E5;
-  --sidebar-ring: #C29C77;
+  --sidebar-ring: #FF914D;
 }
 
 @layer base {
@@ -218,7 +218,7 @@
       to right,
       white 0%,
       white 60%,
-      #C29C77 100%
+      #FF914D 100%
     );
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -230,8 +230,8 @@
   .gradient-gold-to-white {
     background: linear-gradient(
       to right,
-      #C29C77 0%,
-      #C29C77 60%,
+      #FF914D 0%,
+      #FF914D 60%,
       white 100%
     );
     -webkit-background-clip: text;
@@ -276,9 +276,9 @@
 
 @keyframes luxury-glow {
   0%, 100% {
-    box-shadow: 0 0 20px #C29C7733;
+    box-shadow: 0 0 20px #FF914D33;
   }
   50% {
-    box-shadow: 0 0 40px #C29C7755;
+    box-shadow: 0 0 40px #FF914D55;
   }
 }
