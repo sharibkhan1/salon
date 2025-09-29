@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import Appointment from '@/models/Appointment';
+import SchedulingAlgo from '@/models/SchedulingAlgo';
 import { verifyToken } from '@/lib/auth';
 
 // GET - Retrieve all appointments for admin with pagination and filters
@@ -152,6 +153,38 @@ export async function PUT(request: NextRequest) {
 
     appointment.appointmentDetails.status = status;
     await appointment.save();
+
+    // If appointment is being confirmed, create scheduling algorithm entry
+    if (status === 'confirmed') {
+      try {
+        await SchedulingAlgo.createFromAppointment({
+          _id: { toString: () => String(appointment._id) },
+          appointmentDetails: {
+            date: typeof appointment.appointmentDetails.date === 'string' 
+              ? appointment.appointmentDetails.date 
+              : appointment.appointmentDetails.date.toISOString().split('T')[0],
+            time: appointment.appointmentDetails.time
+          },
+          serviceDetails: {
+            duration: appointment.serviceDetails.duration
+          }
+        });
+      } catch (error) {
+        console.error('Error creating scheduling entry:', error);
+        // Don't fail the status update if scheduling entry creation fails
+        // Just log the error for debugging
+      }
+    }
+
+    // If appointment is being cancelled or status changed from confirmed, remove scheduling entry
+    if (status === 'cancelled' || status === 'completed') {
+      try {
+        await SchedulingAlgo.removeByAppointmentId(appointmentId);
+      } catch (error) {
+        console.error('Error removing scheduling entry:', error);
+        // Don't fail the status update if scheduling entry removal fails
+      }
+    }
 
     // Format appointment
     const formattedAppointment = (appointment as unknown as { getFormattedAppointment: () => unknown }).getFormattedAppointment();

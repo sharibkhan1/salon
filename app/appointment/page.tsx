@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Calendar } from "@/components/ui/calendar";
 import { useAuth } from "@/hooks/useAuth";
+import { TIME_SLOTS } from "@/lib/timeslot";
 
 type Gender = "men" | "women";
 type Service = {
@@ -30,24 +31,28 @@ const womenServices: Service[] = [
   { id: "spa-treatment", name: "Spa Treatment", duration: "90 min", price: "$120" }
 ];
 
-const timeSlots = [
-  "9:00 AM", "10:00 AM", "11:00 AM", "12:00 PM",
-  "1:00 PM", "2:00 PM", "3:00 PM", "4:00 PM", "5:00 PM"
-];
-
 export default function Booking() {
   const navigate = useRouter();
   const { user, isLoading: isAuthLoading } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedGender, setSelectedGender] = useState<Gender | null>(null);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [selectedTime, setSelectedTime] = useState<string>("");
   const [customerInfo, setCustomerInfo] = useState({
     name: "",
     email: "",
     phone: ""
   });
+  const [timeSlotAvailability, setTimeSlotAvailability] = useState<{
+    [key: string]: {
+      available: boolean;
+      availableArtists: number;
+      totalArtists: number;
+      status?: string;
+    }
+  }>({});
+  const [isLoadingAvailability, setIsLoadingAvailability] = useState(false);
 
   // Check authentication and redirect if needed
   useEffect(() => {
@@ -66,6 +71,104 @@ export default function Booking() {
       }));
     }
   }, [user, isAuthLoading, navigate]);
+
+  // Helper function to check if a time slot is in the past for today
+  const isTimeSlotInPast = (timeSlot: string, selectedDate: Date): boolean => {
+    const today = new Date();
+    const isToday = selectedDate.toDateString() === today.toDateString();
+    
+    if (!isToday) return false; // Not today, so no slots are in the past
+    
+    // Parse the time slot
+    const [time, period] = timeSlot.split(' ');
+    const [hours, minutes] = time.split(':').map(Number);
+    
+    let hour24 = hours;
+    if (period === 'PM' && hours !== 12) {
+      hour24 += 12;
+    } else if (period === 'AM' && hours === 12) {
+      hour24 = 0;
+    }
+    
+    // Create a date object for the time slot today
+    const slotTime = new Date();
+    slotTime.setHours(hour24, minutes, 0, 0);
+    
+    // Check if the slot time is in the past
+    return slotTime <= today;
+  };
+
+  // Function to fetch time slot availability
+  const fetchTimeSlotAvailability = async (date: Date, duration: string) => {
+    if (!date || !duration) {
+      return;
+    }
+
+    setIsLoadingAvailability(true);
+    try {
+      // Format date manually to avoid timezone issues
+      const dateString = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+      // Get detailed availability using our enhanced API endpoint
+      const response = await fetch(`/api/appointments?checkAvailability=true&date=${dateString}&duration=${encodeURIComponent(duration)}`);
+      const data = await response.json();
+      
+      if (response.ok && data.detailedAvailability) {
+        setTimeSlotAvailability(data.detailedAvailability);
+      } else {
+        // Fallback: get actual salon settings for default availability
+        try {
+          const settingsResponse = await fetch('/api/admin/salon-settings');
+          const settingsData = await settingsResponse.json();
+          const totalArtists = settingsData.numberOfStylists || 1;
+          
+          const defaultAvailability: { [key: string]: { available: boolean; availableArtists: number; totalArtists: number; status?: string } } = {};
+          TIME_SLOTS.forEach(slot => {
+            defaultAvailability[slot] = { available: true, availableArtists: totalArtists, totalArtists, status: 'available' };
+          });
+          setTimeSlotAvailability(defaultAvailability);
+        } catch (settingsError) {
+          console.error('Error fetching salon settings:', settingsError);
+          // Final fallback
+          const defaultAvailability: { [key: string]: { available: boolean; availableArtists: number; totalArtists: number; status?: string } } = {};
+          TIME_SLOTS.forEach(slot => {
+            defaultAvailability[slot] = { available: true, availableArtists: 1, totalArtists: 1, status: 'available' };
+          });
+          setTimeSlotAvailability(defaultAvailability);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching time slot availability:', error);
+      // Set default availability on error - try to get salon settings first
+      try {
+        const settingsResponse = await fetch('/api/admin/salon-settings');
+        const settingsData = await settingsResponse.json();
+        const totalArtists = settingsData.numberOfStylists || 1;
+        
+        const defaultAvailability: { [key: string]: { available: boolean; availableArtists: number; totalArtists: number; status?: string } } = {};
+        TIME_SLOTS.forEach(slot => {
+          defaultAvailability[slot] = { available: true, availableArtists: totalArtists, totalArtists, status: 'available' };
+        });
+        setTimeSlotAvailability(defaultAvailability);
+      } catch (settingsError) {
+        console.error('Error fetching salon settings in fallback:', settingsError);
+        // Final fallback
+        const defaultAvailability: { [key: string]: { available: boolean; availableArtists: number; totalArtists: number; status?: string } } = {};
+        TIME_SLOTS.forEach(slot => {
+          defaultAvailability[slot] = { available: true, availableArtists: 1, totalArtists: 1, status: 'available' };
+        });
+        setTimeSlotAvailability(defaultAvailability);
+      }
+    } finally {
+      setIsLoadingAvailability(false);
+    }
+  };
+
+  // Fetch availability when date or service changes
+  useEffect(() => {
+    if (selectedDate && selectedService) {
+      fetchTimeSlotAvailability(selectedDate, selectedService.duration);
+    }
+  }, [selectedDate, selectedService]);
 
   const handleNext = () => {
     if (currentStep < 5) {
@@ -100,11 +203,10 @@ export default function Booking() {
           gender: selectedGender,
         },
         appointmentDetails: {
-          date: selectedDate?.toISOString(),
+          date: selectedDate ? `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}` : '',
           time: selectedTime,
         },
       };
-
       // Send to API
       const response = await fetch('/api/appointments', {
         method: 'POST',
@@ -306,6 +408,15 @@ export default function Booking() {
                 <CardTitle className="text-3xl cursor-default font-playfair text-center">
                   <h1>Select Date & Time</h1>
                 </CardTitle>
+                {selectedDate && selectedService && Object.keys(timeSlotAvailability).length > 0 && (
+                  <div className="text-center mt-4">
+                    <div className="inline-flex items-center space-x-2 px-4 py-2 bg-primary/10 rounded-full">
+                      <span className="text-sm font-medium text-primary">
+                        Salon has {Object.values(timeSlotAvailability)[0]?.totalArtists || 1} hair stylists available
+                      </span>
+                    </div>
+                  </div>
+                )}
               </CardHeader>
               <CardContent>
                 <div className="grid lg:grid-cols-2 gap-8">
@@ -321,21 +432,108 @@ export default function Booking() {
                   </div>
                   
                   <div className="space-y-4">
-                    <h3 className="text-xl font-playfair font-semibold">Available Times</h3>
-                    <div className="grid grid-cols-2 gap-3">
-                      {timeSlots.map((time) => (
-                        <button
-                          key={time}
-                          onClick={() => setSelectedTime(time)}
-                          className={`p-3 rounded-lg border transition-all duration-300 font-montserrat cursor-pointer ${
-                            selectedTime === time
-                              ? "border-primary bg-primary text-primary-foreground"
-                              : "border-border hover:border-primary/50 hover:bg-primary/10"
-                          }`}
-                        >
-                          {time}
-                        </button>
-                      ))}
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-xl font-playfair font-semibold">Available Times</h3>
+                      {isLoadingAvailability && (
+                        <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                          <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+                          <span>Checking availability...</span>
+                        </div>
+                      )}
+                    </div>
+
+                      {/* Legend */}
+                      <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-muted-foreground mt-4 p-3 bg-muted/30 rounded-lg">
+                      <div className="flex items-center space-x-1">
+                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span>All stylists available</span>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                        <span>Some stylists available</span>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                        <span>Fully booked</span>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                        <span>Duration conflict</span>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <div className="w-2 h-2 bg-gray-500 rounded-full"></div>
+                        <span>Time passed</span>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                      {TIME_SLOTS.map((time) => {
+                        const slotInfo = timeSlotAvailability[time];
+                        const isAvailable = slotInfo?.available ?? true;
+                        const availableArtists = slotInfo?.availableArtists ?? 1;
+                        const totalArtists = slotInfo?.totalArtists ?? 1;
+                        const status = slotInfo?.status ?? 'available';
+                        
+                        // Check if this time slot is in the past for today
+                        const isInPast = selectedDate ? isTimeSlotInPast(time, selectedDate) : false;
+                        const finalAvailable = isAvailable && !isInPast;
+                        
+                        // Determine display text and colors based on status
+                        let displayText = `${availableArtists}/${totalArtists} stylists available`;
+                        let statusColor = 'bg-green-500';
+                        let borderColor = "border-border hover:border-primary/50 hover:bg-primary/10 cursor-pointer";
+                        
+                        if (isInPast) {
+                          displayText = 'Time Passed';
+                          statusColor = 'bg-gray-500';
+                          borderColor = "border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed opacity-60";
+                        } else if (status === 'fully_booked') {
+                          displayText = 'Fully Booked';
+                          statusColor = 'bg-red-500';
+                          borderColor = "border-red-200 bg-red-50 text-red-400 cursor-not-allowed opacity-60";
+                        } else if (status === 'duration_conflict') {
+                          displayText = 'Duration Conflict';
+                          statusColor = 'bg-orange-500';
+                          borderColor = "border-orange-200 bg-orange-50 text-orange-400 cursor-not-allowed opacity-60";
+                        } else if (availableArtists < totalArtists) {
+                          statusColor = 'bg-yellow-500';
+                        }
+                        
+                        return (
+                          <button
+                            key={time}
+                            onClick={() => finalAvailable ? setSelectedTime(time) : null}
+                            disabled={!finalAvailable}
+                            className={`p-3 rounded-lg border transition-all duration-300 font-montserrat relative ${
+                              !finalAvailable
+                                ? borderColor
+                                : selectedTime === time
+                                ? "border-primary bg-primary/80 text-primary-foreground cursor-pointer"
+                                : borderColor
+                            }`}
+                          >
+                            <div className="flex flex-col items-center space-y-1">
+                              <span className="font-semibold">{time}</span>
+                              <div className="text-xs">
+                                {!finalAvailable ? (
+                                  <span className={`font-medium ${
+                                    isInPast ? 'text-gray-500' : 
+                                    status === 'duration_conflict' ? 'text-orange-500' : 'text-red-500'
+                                  }`}>
+                                    {displayText}
+                                  </span>
+                                ) : (
+                                  <span className={`${selectedTime === time ? 'text-primary-foreground/80' : 'text-muted-foreground'}`}>
+                                    {displayText}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            
+                            {/* Status indicator */}
+                            <div className={`absolute top-1 right-1 w-2 h-2 rounded-full ${statusColor}`}></div>
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
@@ -517,6 +715,13 @@ export default function Booking() {
                     className="cursor-pointer"
                   >
                     Book Another Appointment
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    onClick={() => navigate.push('/bookings')}
+                    className="cursor-pointer"
+                  >
+                    My Appointments
                   </Button>
                 </div>
               </CardContent>

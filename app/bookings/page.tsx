@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Calendar, Clock, User, Phone, Mail, Package, CalendarX, RefreshCw, X, Edit, Check } from "lucide-react";
+import { Calendar, Clock, User, Phone, Mail, Package, CalendarX, RefreshCw, X, Check } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import RescheduleModal from "@/components/RescheduleModal";
 
@@ -212,10 +212,6 @@ export default function BookingsPage() {
     }
   };
 
-  const openRescheduleModal = (appointment: Appointment) => {
-    setRescheduleModal({ isOpen: true, appointment });
-  };
-
   const closeRescheduleModal = () => {
     setRescheduleModal({ isOpen: false, appointment: null });
   };
@@ -403,19 +399,6 @@ export default function BookingsPage() {
         )}
         <span>Cancel</span>
       </Button>
-
-      {/* Reschedule button (only for pending) */}
-      {appointment.appointment.status === 'pending' && (
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => openRescheduleModal(appointment)}
-          className="flex items-center space-x-2 text-blue-600 cursor-pointer hover:text-blue-600 border-blue-200 hover:bg-blue-50"
-        >
-          <Edit className="h-4 w-4" />
-          <span>Reschedule</span>
-        </Button>
-      )}
 
       {/* Confirm button (only for rescheduled) */}
       {appointment.appointment.status === 'rescheduled' && (

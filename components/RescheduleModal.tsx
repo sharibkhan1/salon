@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
 import { toast } from "sonner";
 import { X, Calendar as CalendarIcon, Clock } from "lucide-react";
+import { TIME_SLOTS } from "@/lib/timeslot";
 
 interface RescheduleModalProps {
   isOpen: boolean;
@@ -22,11 +23,6 @@ interface RescheduleModalProps {
   };
   onReschedule: (appointmentId: string, newDate: string, newTime: string) => Promise<void>;
 }
-
-const timeSlots = [
-  "9:00 AM", "10:00 AM", "11:00 AM", "12:00 PM",
-  "1:00 PM", "2:00 PM", "3:00 PM", "4:00 PM", "5:00 PM"
-];
 
 export default function RescheduleModal({ 
   isOpen, 
@@ -131,7 +127,7 @@ export default function RescheduleModal({
                 Select New Time
               </h3>
               <div className="grid grid-cols-2 gap-3">
-                {timeSlots.map((time) => (
+                {TIME_SLOTS.map((time) => (
                   <button
                     key={time}
                     onClick={() => setSelectedTime(time)}

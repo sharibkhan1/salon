@@ -20,7 +20,9 @@ import {
   Search,
   Edit,
   Check,
-  X
+  X,
+  Settings,
+  Users
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import RescheduleModal from "@/components/RescheduleModal";
@@ -90,6 +92,24 @@ export default function AdminPage() {
     isOpen: boolean;
     appointment: Appointment | null;
   }>({ isOpen: false, appointment: null });
+  const [numberOfStylists, setNumberOfStylists] = useState<number>(1);
+  const [isUpdatingStylists, setIsUpdatingStylists] = useState(false);
+  const [isEditingStylists, setIsEditingStylists] = useState(false);
+
+  const fetchSalonSettings = useCallback(async () => {
+    try {
+      const response = await fetch('/api/admin/salon-settings');
+      const data = await response.json();
+
+      if (response.ok) {
+        setNumberOfStylists(data.settings.numberOfStylists);
+      } else {
+        console.error('Failed to fetch salon settings:', data.error);
+      }
+    } catch (error) {
+      console.error('Error fetching salon settings:', error);
+    }
+  }, []);
 
   const fetchAppointments = useCallback(async (page: number = 1) => {
     if (page === 1) {
@@ -145,8 +165,9 @@ export default function AdminPage() {
 
     if (user && user.role === 'admin') {
       fetchAppointments(1);
+      fetchSalonSettings();
     }
-  }, [user, isAuthLoading, router, fetchAppointments]);
+  }, [user, isAuthLoading, router, fetchAppointments, fetchSalonSettings]);
 
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= pagination.totalPages) {
@@ -255,6 +276,43 @@ export default function AdminPage() {
     setRescheduleModal({ isOpen: false, appointment: null });
   };
 
+  const handleUpdateStylists = async () => {
+    if (numberOfStylists < 1 || numberOfStylists > 50) {
+      toast.error("Number of stylists must be between 1 and 50");
+      return;
+    }
+
+    setIsUpdatingStylists(true);
+    try {
+      const response = await fetch('/api/admin/salon-settings', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ numberOfStylists }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast.success(`Number of stylists updated to ${numberOfStylists}`);
+        setIsEditingStylists(false);
+      } else {
+        toast.error(data.error || "Failed to update number of stylists");
+      }
+    } catch (error) {
+      console.error("Error updating stylists:", error);
+      toast.error("Something went wrong while updating stylists");
+    } finally {
+      setIsUpdatingStylists(false);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditingStylists(false);
+    fetchSalonSettings(); // Reset to original value
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'pending':
@@ -312,6 +370,81 @@ export default function AdminPage() {
             Manage all salon appointments
           </p>
         </div>
+
+        {/* Salon Settings */}
+        <Card className="shadow-luxury border-0 bg-white/95 backdrop-blur-sm mb-8">
+          <CardHeader>
+            <CardTitle className="font-heading text-xl text-luxury-dark flex items-center">
+              <Settings className="h-5 w-5 mr-2" />
+              Salon Settings
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-2">
+                  <Users className="h-5 w-5 text-luxury-gold" />
+                  <Label htmlFor="stylists" className="text-sm font-medium">
+                    Number of Hair Stylists:
+                  </Label>
+                </div>
+                {isEditingStylists ? (
+                  <div className="flex items-center space-x-2">
+                    <Input
+                      id="stylists"
+                      type="number"
+                      min="1"
+                      max="50"
+                      value={numberOfStylists}
+                      onChange={(e) => setNumberOfStylists(parseInt(e.target.value) || 1)}
+                      className="w-20 h-8"
+                      disabled={isUpdatingStylists}
+                    />
+                    <Button
+                      onClick={handleUpdateStylists}
+                      disabled={isUpdatingStylists}
+                      variant="outline"
+                      size="sm"
+                      className="h-8 px-3 text-green-600 cursor-pointer border-green-200 hover:bg-green-600"
+                    >
+                      {isUpdatingStylists ? (
+                        <div className="w-3 h-3 border-2 border-green-600 border-t-transparent rounded-full animate-spin"></div>
+                      ) : (
+                        <Check className="h-3 w-3" />
+                      )}
+                    </Button>
+                    <Button
+                      onClick={handleCancelEdit}
+                      disabled={isUpdatingStylists}
+                      variant="outline"
+                      size="sm"
+                      className="h-8 px-3 text-red-600 cursor-pointer border-red-200 hover:bg-red-600"
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="flex items-center space-x-2">
+                    <span className="font-semibold text-luxury-gold text-lg">
+                      {numberOfStylists}
+                    </span>
+                    <Button
+                      onClick={() => setIsEditingStylists(true)}
+                      variant="outline"
+                      size="sm"
+                      className="h-8 px-3 text-blue-600 cursor-pointer border-blue-200 hover:bg-blue-600"
+                    >
+                      <Edit className="h-3 w-3" />
+                    </Button>
+                  </div>
+                )}
+              </div>
+              <div className="text-sm hidden md:block text-muted-foreground">
+                Manage your salon capacity
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         <div className="max-w-7xl mx-auto">
           {/* Filters and Actions */}

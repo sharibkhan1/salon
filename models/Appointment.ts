@@ -1,4 +1,5 @@
 import mongoose, { Document, Model, Schema } from 'mongoose';
+import { TIME_SLOTS } from '@/lib/timeslot';
 
 export interface IAppointment extends Document {
   // User Information
@@ -100,22 +101,13 @@ const AppointmentSchema: Schema<IAppointment> = new Schema(
     },
     appointmentDetails: {
       date: {
-        type: Date,
+        type: String,
         required: [true, 'Appointment date is required'],
-        validate: {
-          validator: function(date: Date) {
-            return date >= new Date();
-          },
-          message: 'Appointment date cannot be in the past',
-        },
       },
       time: {
         type: String,
         required: [true, 'Appointment time is required'],
-        enum: [
-          '9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM',
-          '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM'
-        ],
+        enum: TIME_SLOTS,
       },
       status: {
         type: String,
@@ -184,7 +176,7 @@ AppointmentSchema.methods.getFormattedAppointment = function() {
     service: this.serviceDetails,
     appointment: {
       ...this.appointmentDetails,
-      date: this.appointmentDetails.date.toLocaleDateString(),
+      date: this.appointmentDetails.date, // Date is already a string, no need to format
     },
     rescheduleHistory: this.rescheduleHistory || [],
     createdAt: this.createdAt,
@@ -192,25 +184,20 @@ AppointmentSchema.methods.getFormattedAppointment = function() {
 };
 
 // Static method to find appointments by date
-AppointmentSchema.statics.findByDate = function(date: Date) {
-  const startOfDay = new Date(date);
-  startOfDay.setHours(0, 0, 0, 0);
-  
-  const endOfDay = new Date(date);
-  endOfDay.setHours(23, 59, 59, 999);
+AppointmentSchema.statics.findByDate = function(date: Date | string) {
+  const dateString = typeof date === 'string' ? date : date.toISOString().split('T')[0];
   
   return this.find({
-    'appointmentDetails.date': {
-      $gte: startOfDay,
-      $lte: endOfDay,
-    },
+    'appointmentDetails.date': dateString,
   });
 };
 
 // Static method to check time slot availability
-AppointmentSchema.statics.isTimeSlotAvailable = async function(date: Date, time: string) {
+AppointmentSchema.statics.isTimeSlotAvailable = async function(date: Date | string, time: string) {
+  const dateString = typeof date === 'string' ? date : date.toISOString().split('T')[0];
+  
   const existingAppointment = await this.findOne({
-    'appointmentDetails.date': date,
+    'appointmentDetails.date': dateString,
     'appointmentDetails.time': time,
     'appointmentDetails.status': { $in: ['pending', 'confirmed'] },
   });
