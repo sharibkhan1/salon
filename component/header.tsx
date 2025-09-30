@@ -4,7 +4,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { LogOut } from "lucide-react";
+import { CalendarCheck, CalendarPlus, Home, LogOut, Shield } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
 const Header = () => {
@@ -39,17 +39,19 @@ const Header = () => {
     <header className="fixed top-0 left-0 right-0 z-50 px-4 bg-background/95 backdrop-blur-sm border-b border-border">
       <nav className="luxury-container flex items-center justify-between py-4">
         <Link href="/" className="font-heading text-xl md:text-2xl font-bold text-luxury-gold">
-        Tangerine Beauty 
+        <span className="hidden md:block">Tangerine Beauty </span>
+        <span className="md:hidden">Tangerine</span>
         </Link>
         
-        <div className="hidden md:flex items-center space-x-8">
+        <div className="flex items-center space-x-4 md:space-x-8">
           <Link 
             href="/" 
             className={`text-sm font-medium transition-colors hover:text-luxury-gold ${
               location === "/" ? "text-luxury-gold" : "text-foreground"
             }`}
           >
-            Home
+            <span className="hidden md:block">Home</span>
+            <span className="md:hidden"><Home className="h-6 w-6"/></span>
           </Link>
           <Link 
             href="/appointment" 
@@ -57,7 +59,8 @@ const Header = () => {
               location === "/appointment" ? "text-luxury-gold" : "text-foreground"
             }`}
           >
-            Book Appointment
+            <span className="hidden md:block">Book Appointment</span>
+            <span className="md:hidden"><CalendarPlus className="h-6 w-6"/></span>
           </Link>
           {user && (
             <Link 
@@ -65,8 +68,9 @@ const Header = () => {
               className={`text-sm font-medium transition-colors hover:text-luxury-gold ${
                 location === "/bookings" ? "text-luxury-gold" : "text-foreground"
               }`}
-            >
-              My Bookings
+            > 
+              <span className="hidden md:block">My Bookings</span>
+              <span className="md:hidden"><CalendarCheck className="h-6 w-6"/></span>
             </Link>
           )}
           {user && user.role === "admin" && (
@@ -76,7 +80,8 @@ const Header = () => {
                 location.startsWith("/admin") ? "text-luxury-gold" : "text-foreground"
               }`}
             >
-              Admin Panel
+              <span className="hidden md:block">Admin Panel</span>
+              <span className="md:hidden"><Shield className="h-6 w-6"/></span>
             </Link>
           )}
         </div>
@@ -95,8 +100,9 @@ const Header = () => {
                   <div className="w-4 h-4 border-2 border-luxury-gold border-t-transparent rounded-full animate-spin"></div>
                 ) : (
                   <>
-                    Logout
-                    <LogOut className="h-4 w-4" />
+                    
+                    <span className="hidden md:block">Logout</span>
+                    <span className=""><LogOut className="h-4 w-4"/></span>
                   </>
                 )}
               </Button>
